@@ -45,7 +45,7 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-         for i in range(self.iterations): # every k
+        for i in range(self.iterations): # every k
             updatedValues = self.values.copy()  # to use batch-version of MDP , hard copy the values
 
             for state in self.mdp.getStates():
