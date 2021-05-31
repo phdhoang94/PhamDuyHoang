@@ -39,7 +39,7 @@ class ValueIterationAgent(ValueEstimationAgent):
               mdp.getReward(state, action, nextState)
               mdp.isTerminal(state)
         """
-        self.mdp = mdp
+        self.mdp = mdp 
         self.discount = discount
         self.iterations = iterations
         self.values = util.Counter()  # A Counter is a dict with default 0
@@ -48,10 +48,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         states = self.mdp.getStates()
 
-        for iteration in range(self.iterations):
+        for iteration in range(self.iterations): # iterations count the loop
             tempvalues = util.Counter()
             for state in states:
-                maxvalue = -999999
+                maxvalue = -99999
                 actions = mdp.getPossibleActions(state)
                 for action in actions:
                     transitionStatesProbs = self.mdp.getTransitionStatesAndProbs(state, action)
@@ -61,7 +61,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                                     self.mdp.getReward(state, action, stateProb[0]) + self.discount * self.values[
                                 stateProb[0]])
                     maxvalue = max(maxvalue, sumvalue)
-                if maxvalue != -999999:
+                if maxvalue != -99999:
                     tempvalues[state] = maxvalue
 
             for state in states:
