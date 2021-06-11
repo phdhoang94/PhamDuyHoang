@@ -63,7 +63,14 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-
+        legalActions = self.getLegalActions(state) 
+        if len(legalActions) == 0: # Giới hạn chiều dài tối đa được thép thử của Agent
+          return 0.0
+        maxqvalue = -99999
+        for maxqvalue in legalActions:
+          if self.getQValue(state, action) > maxqvalue:
+            maxqvalue = self.getQValue(state, action)
+          return maxqvalue
         # util.raiseNotDefined()
 
     def computeActionFromQValues(self, state):
