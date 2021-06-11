@@ -43,7 +43,7 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
 
         "*** YOUR CODE HERE ***"
-        self.qvalue = util.Counter()                          # Khởi tạo Qvalue
+        self.qvalue = util.Counter()
 
     def getQValue(self, state, action):
         """
@@ -64,11 +64,11 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
         legalActions = self.getLegalActions(state)
-        if len(legalActions) == 0:                          # Giới hạn chiều dài tối đa được thép thử của Agent
-            return 0.0                                      # quá chiều dài cho phép, về lại vị trí đầu
-        maxqvalue = -999999                                 # Phạt agent vì không tìm ra đường đi
+        if len(legalActions) == 0:
+            return 0.0
+        maxqvalue = -999999
         for action in legalActions:
-            if self.getQValue(state, action) > maxqvalue:   # thử từng Actions, gán Q value cho actions có kết quả tốt nhất.
+            if self.getQValue(state, action) > maxqvalue:
                 maxqvalue = self.getQValue(state, action)
         return maxqvalue
         # util.raiseNotDefined()
@@ -80,17 +80,17 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        bestAction = [None]                                 # Tái khới động lại bestaction
-        legalActions = self.getLegalActions(state)          # Truy nhập toàn bộ các khả năng
-        maxqvalue = -999999                                 # Đưa maxqvalue về giá trị nhỏ nhất
-        for action in legalActions:                         # Thử từng action có thể
-            if self.getQValue(state, action) > maxqvalue:   # Nếu giá Q tại state > max
-                maxqvalue = self.getQValue(state, action)   # Maxq = giá trị hiện tại
-                bestAction = [action]                       # Best = giá trị đó
-            elif self.getQValue(state, action) == maxqvalue:# nếu không
-                bestAction.append(action)                   # thêm action đó vào list
+        bestAction = [None]
+        legalActions = self.getLegalActions(state)
+        maxqvalue = -999999
+        for action in legalActions:
+            if self.getQValue(state, action) > maxqvalue:
+                maxqvalue = self.getQValue(state, action)
+                bestAction = [action]
+            elif self.getQValue(state, action) == maxqvalue:
+                bestAction.append(action)
 
-        return random.choice(bestAction)                    # Tiếp tục làm hoạt động ngẫu nhiên.
+        return random.choice(bestAction)
         # util.raiseNotDefined()
 
     def getAction(self, state):
@@ -104,20 +104,20 @@ class QLearningAgent(ReinforcementAgent):
           HINT: To pick randomly from a list, use random.choice(list)
         """
         # Pick Action
-        legalActions = self.getLegalActions(state)        # Gọi các giá trị state trong legalAc
-        action = None                                     # Khởi động action
+        legalActions = self.getLegalActions(state)
+        action = None
         "*** YOUR CODE HERE ***"
 
-        if util.flipCoin(self.epsilon):                   # Take ramdom action.
-            return random.choice(legalActions)            # Trả về giá trị legal actions
+        if util.flipCoin(self.epsilon):
+            return random.choice(legalActions)
         else:
-            return self.computeActionFromQValues(state)   # Hết random trở về tính giá trị Action từ Q
+            return self.computeActionFromQValues(state)
 
         # util.raiseNotDefined()
 
         # return action
 
-    def update(self, state, action, nextState, reward):   # Tính toán T tự sample và cập nhật q
+    def update(self, state, action, nextState, reward):
         """
           The parent class calls this to observe a
           state = action => nextState and reward transition.
@@ -127,9 +127,9 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        sample = reward + self.discount * self.computeValueFromQValues(nextState)                      # [R(s,a,s')+alpha*v(s')] 
+        sample = reward + self.discount * self.computeValueFromQValues(nextState)
         key = state, action
-        self.qvalue[key] = (1.0 - self.alpha) * self.getQValue(state, action) + self.alpha * sample    
+        self.qvalue[key] = (1.0 - self.alpha) * self.getQValue(state, action) + self.alpha * sample
         # util.raiseNotDefined()
 
     def getPolicy(self, state):
@@ -192,10 +192,10 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        f = self.featExtractor                                                            # Khởi tại biến cho Exploration function
+        f = self.featExtractor
         features = f.getFeatures(state, action)
-        qvalue = 0                                                                        # Trả Qvalue về 0
-        for feature in features.keys():                                                   # Thử từng feature
+        qvalue = 0
+        for feature in features.keys():
             qvalue += self.weights[feature] * features[feature]
         return qvalue
         # util.raiseNotDefined()
@@ -205,14 +205,14 @@ class ApproximateQAgent(PacmanQAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        actionsFromNextState = self.getLegalActions(nextState)                            # gán s'
+        actionsFromNextState = self.getLegalActions(nextState)
         maxqnext = -999999
-        for act in actionsFromNextState:                                                  # thử tất cả các s', chọn s' max
+        for act in actionsFromNextState:
             if self.getQValue(nextState, act) > maxqnext:
-                maxqnext = self.getQValue(nextState, act)                                 # Tính Q(s')max
-        if maxqnext == -999999:                                                           # Nếu s' ko đi dx thì gán  Q(s')max = 0
+                maxqnext = self.getQValue(nextState, act)
+        if maxqnext == -999999:
             maxqnext = 0
-        diff = (reward + (self.discount * maxqnext)) - self.getQValue(state, action)      # nếu đi được thì tính diff = [r+alpha*maxQ(s',a')] - Q(s,a)
+        diff = (reward + (self.discount * maxqnext)) - self.getQValue(state, action)
         features = self.featExtractor.getFeatures(state, action)
         self.qvalue[(state, action)] += self.alpha * diff
         for feature in features.keys():
@@ -228,5 +228,4 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
-            # Thoát code
             pass

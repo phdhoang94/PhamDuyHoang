@@ -48,11 +48,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         states = self.mdp.getStates()
 
-        for iteration in range(self.iterations):                                                         # Iterations count the loop
-            tempvalues = util.Counter()                                                                  # Tính khoản cách với điểm khởi đầu
-            for state in states:
-                maxvalue = -999999                                                                       # Giá trị để dừng vòng lặp
-                actions = mdp.getPossibleActions(state)
+        for iteration in range(self.iterations):                                                                    # Iterations count the loop
+            tempvalues = util.Counter()
+            for state in states:                                                                                    # Tính khoản cách với điểm khởi đầu
+                maxvalue = -999999                                                                                  # Giá trị để dừng vòng lặp
+                actions = mdp.getPossibleActions(state)                                                             
                 for action in actions:
                     transitionStatesProbs = self.mdp.getTransitionStatesAndProbs(state, action)
                     sumvalue = 0.0
@@ -61,11 +61,11 @@ class ValueIterationAgent(ValueEstimationAgent):
                                     self.mdp.getReward(state, action, stateProb[0]) + self.discount * self.values[
                                 stateProb[0]])
                     maxvalue = max(maxvalue, sumvalue)
-                if maxvalue != -999999:                                                                  # Nếu maxvalue khác -999999 thì gắn tempvalues = max value
+                if maxvalue != -999999:                                                                              # Nếu maxvalue khác -999999 thì gắn tempvalues = max value
                     tempvalues[state] = maxvalue
 
             for state in states:
-                self.values[state] = tempvalues[state]                                                   # Gán giá trị vào bước đi max
+                self.values[state] = tempvalues[state]                                                               # Gán giá trị vào bước đi max
 
     def getValue(self, state):
         """
@@ -73,12 +73,13 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         return self.values[state]
 
-    def computeQValueFromValues(self, state, action):                                                   # Tính Q value cho từng bước
+    def computeQValueFromValues(self, state, action):
         """
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
+        # Tính Q value cho từng bước
         transitionStatesProbs = self.mdp.getTransitionStatesAndProbs(state, action)
         value = 0.0
         for stateProb in transitionStatesProbs:
@@ -87,7 +88,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         return value
         # util.raiseNotDefined()
 
-    def computeActionFromValues(self, state):                                                           # Tính giá trị Qvalue tối đa cho 1 vòng di chuyển
+    def computeActionFromValues(self, state):
         """
           The policy is the best action in the given state
           according to the values currently stored in self.values.
@@ -96,15 +97,15 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-
-        actions = self.mdp.getPossibleActions(state)                                                     # Thử tất cả các bước
-        maxaction = None                                                                                 # Giá trị max trống
-        maxvalueoveractions = -999999                                                                    # Gán giá trị lớn vs overaction ( điểm bị trừ theo thời gian)
+        # Tính giá trị Qvalue tối đa cho 1 vòng di chuyển         
+        actions = self.mdp.getPossibleActions(state)                                    # Thử tất cả các bước
+        maxaction = None                                                                # Giá trị max trống
+        maxvalueoveractions = -999999                                                   # Gán giá trị lớn vs overaction ( điểm bị trừ theo thời gian)
         for action in actions:
-            value = self.computeQValueFromValues(state, action)                                          # Tính Q value cho mỗi hoạt động
-            if value > maxvalueoveractions:                                                              # Nếu chưa overaction thì tính maxaction 
+            value = self.computeQValueFromValues(state, action)                         # Tính Q value cho mỗi hoạt động
+            if value > maxvalueoveractions:                                             # Nếu chưa overaction thì tính maxaction 
                 maxvalueoveractions = value
-                maxaction = action                                                                       #--> trả về giá trị max action 
+                maxaction = action                                                      #--> trả về giá trị max action
         return maxaction
         # util.raiseNotDefined()
 
