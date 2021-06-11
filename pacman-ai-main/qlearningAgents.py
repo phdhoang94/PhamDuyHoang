@@ -116,7 +116,7 @@ class QLearningAgent(ReinforcementAgent):
 
         return action
 
-    def update(self, state, action, nextState, reward):
+    def update(self, state, action, nextState, reward): #tính toán T tự sample và cập nhật q
         """
           The parent class calls this to observe a
           state = action => nextState and reward transition.
@@ -125,8 +125,10 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-
-        
+        sample = reward + self.discount * self.computeActionFromQValues(nextState) # [R(s,a,s')+alpha*v(s')]
+        key = state, action
+        self.qvalue[key] = (1.0 - self.alpha) * self.getQvalue(state,action) + self.alpha*sample # (1-alpha)*[Q+alpha*maxQ]
+        # util.raiseNotDefined
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -188,7 +190,13 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-       
+        f = self.featExtractor # Khởi tại biến cho Exploration function
+        features = f.getFeatures(state, action)
+        qvalue = 0 # trả Qvalue về 0
+        for feature in features.key() #Thử từng feature
+            qvalue += self.weights[feature] * features[feature]
+        return qvalue
+              
         # util.raiseNotDefined()
 
     def update(self, state, action, nextState, reward):
@@ -196,6 +204,18 @@ class ApproximateQAgent(PacmanQAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
+        actionsFromNextState = self.getLegalActions(nextState) # gán s'
+        maxqnext = -999999 
+        for act in actionsFromNextState: # thử tất cả các s', chọn s' max
+            if self.getQValue(nextState, act) > maxqnext:
+                maxqnext = self.getQValue(nextState, act) #tính Q(s')max
+        if maxqnext == -999999: # nếu s' ko đi dx thì gán  Q(s')max = 0
+            maxqnext = 0
+        diff = (reward + (self.discount * maxqnext)) - self.getQValue(state, action) # nếu đi được thì tính diff = [r+alpha*maxQ(s',a')] - Q(s,a)
+        features = self.featExtractor.getFeatures(state, action) #fm(s,a)
+        self.qvalue[(state, action)] += self.alpha * diff
+        for feature in features.keys():
+            self.weights[feature] += self.alpha * diff * features[feature] # W = w+alpha[r+y.maxQ(s',a') - Q(s,a)]fm(s,a)
      
         # util.raiseNotDefined()
 
@@ -208,4 +228,5 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
+            #Thoát code
             pass 
