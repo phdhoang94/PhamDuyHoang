@@ -43,7 +43,7 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
 
         "*** YOUR CODE HERE ***"
-        self.qvalue = util.Counter() # Khởi tạo Qvalue
+        self.qvalue = util.Counter()                          # Khởi tạo Qvalue
 
     def getQValue(self, state, action):
         """
@@ -53,7 +53,7 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
         return self.qvalue[state, action]
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
 
     def computeValueFromQValues(self, state):
         """
@@ -63,35 +63,35 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        legalActions = self.getLegalActions(state) 
-        if len(legalActions) == 0: # Giới hạn chiều dài tối đa được thép thử của Agent
-          return 0.0 # quá chiều dài cho phép, về lại vị trí đầu
-        maxqvalue = -999999 # Phạt agent vì không tìm ra đường đi
-        for maxqvalue in legalActions:
-          if self.getQValue(state, action) > maxqvalue: # thử từng Actions, gán Q value cho actions có kết quả tốt nhất.
-            maxqvalue = self.getQValue(state, action)
-          return maxqvalue
+        legalActions = self.getLegalActions(state)
+        if len(legalActions) == 0:                          # Giới hạn chiều dài tối đa được thép thử của Agent
+            return 0.0                                      # quá chiều dài cho phép, về lại vị trí đầu
+        maxqvalue = -999999                                 # Phạt agent vì không tìm ra đường đi
+        for action in legalActions:
+            if self.getQValue(state, action) > maxqvalue:   # thử từng Actions, gán Q value cho actions có kết quả tốt nhất.
+                maxqvalue = self.getQValue(state, action)
+        return maxqvalue
         # util.raiseNotDefined()
 
     def computeActionFromQValues(self, state):
         """
           Compute the best action to take in a state.  Note that if there
           are no legal actions, which is the case at the terminal state,
-          you should return None. #tính maxQ(s',a') --> target
+          you should return None.
         """
         "*** YOUR CODE HERE ***"
-        bestAction = [None] # tái khới động lại bestaction
-        legalActions = self.getLegalActions(state) #truy nhập toàn bộ các khả năng
-        maxqvalue = -999999 #Đưa maxqvalue về giá trị nhỏ nhất
-        for action in legalActions: # thử từng action có thể
-          if self.getQValue(state,action) > maxqvalue: # nếu giá Q tại state > max
-            maxqvalue =self.getQValue(state, action) # maxq = giá trị hiện tại
-            bestAction = [action] # best = giá trị đó
-          elif self.getQvalue (state, action) == maxqvalue: # nếu không
-            bestAction.append(action) # thêm action đó vào list
-        return ramdom.choice(action) # tiếp tục làm hoạt động ngẫu nhiên.
-        
-        util.raiseNotDefined()
+        bestAction = [None]                                 # Tái khới động lại bestaction
+        legalActions = self.getLegalActions(state)          # Truy nhập toàn bộ các khả năng
+        maxqvalue = -999999                                 # Đưa maxqvalue về giá trị nhỏ nhất
+        for action in legalActions:                         # Thử từng action có thể
+            if self.getQValue(state, action) > maxqvalue:   # Nếu giá Q tại state > max
+                maxqvalue = self.getQValue(state, action)   # Maxq = giá trị hiện tại
+                bestAction = [action]                       # Best = giá trị đó
+            elif self.getQValue(state, action) == maxqvalue:# nếu không
+                bestAction.append(action)                   # thêm action đó vào list
+
+        return random.choice(bestAction)                    # Tiếp tục làm hoạt động ngẫu nhiên.
+        # util.raiseNotDefined()
 
     def getAction(self, state):
         """
@@ -104,19 +104,20 @@ class QLearningAgent(ReinforcementAgent):
           HINT: To pick randomly from a list, use random.choice(list)
         """
         # Pick Action
-        legalActions = self.getLegalActions(state) #gọi các giá trị state trong legalAc
-        action = None # khỏi động action
+        legalActions = self.getLegalActions(state)        # Gọi các giá trị state trong legalAc
+        action = None                                     # Khởi động action
         "*** YOUR CODE HERE ***"
-        if util.flipCoin(self.epsilon): # take ramdom action
-          return ramdom.choise(legalActions) # trả về giá trị legal actions
+
+        if util.flipCoin(self.epsilon):                   # Take ramdom action.
+            return random.choice(legalActions)            # Trả về giá trị legal actions
         else:
-          return self.computeActionFromQValues(state) # Hết random trở về tính giá trị Action từ Q
+            return self.computeActionFromQValues(state)   # Hết random trở về tính giá trị Action từ Q
 
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
 
-        return action
+        # return action
 
-    def update(self, state, action, nextState, reward): #tính toán T tự sample và cập nhật q
+    def update(self, state, action, nextState, reward):   # Tính toán T tự sample và cập nhật q
         """
           The parent class calls this to observe a
           state = action => nextState and reward transition.
@@ -125,10 +126,11 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        sample = reward + self.discount * self.computeActionFromQValues(nextState) # [R(s,a,s')+alpha*v(s')]
+
+        sample = reward + self.discount * self.computeValueFromQValues(nextState)                      # [R(s,a,s')+alpha*v(s')] 
         key = state, action
-        self.qvalue[key] = (1.0 - self.alpha) * self.getQvalue(state,action) + self.alpha*sample # (1-alpha)*[Q+alpha*maxQ]
-        # util.raiseNotDefined
+        self.qvalue[key] = (1.0 - self.alpha) * self.getQValue(state, action) + self.alpha * sample    
+        # util.raiseNotDefined()
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -190,13 +192,12 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        f = self.featExtractor # Khởi tại biến cho Exploration function
+        f = self.featExtractor                                                            # Khởi tại biến cho Exploration function
         features = f.getFeatures(state, action)
-        qvalue = 0 # trả Qvalue về 0
-        for feature in features.key() #Thử từng feature
+        qvalue = 0                                                                        # Trả Qvalue về 0
+        for feature in features.keys():                                                   # Thử từng feature
             qvalue += self.weights[feature] * features[feature]
         return qvalue
-              
         # util.raiseNotDefined()
 
     def update(self, state, action, nextState, reward):
@@ -204,19 +205,18 @@ class ApproximateQAgent(PacmanQAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        actionsFromNextState = self.getLegalActions(nextState) # gán s'
-        maxqnext = -999999 
-        for act in actionsFromNextState: # thử tất cả các s', chọn s' max
+        actionsFromNextState = self.getLegalActions(nextState)                            # gán s'
+        maxqnext = -999999
+        for act in actionsFromNextState:                                                  # thử tất cả các s', chọn s' max
             if self.getQValue(nextState, act) > maxqnext:
-                maxqnext = self.getQValue(nextState, act) #tính Q(s')max
-        if maxqnext == -999999: # nếu s' ko đi dx thì gán  Q(s')max = 0
+                maxqnext = self.getQValue(nextState, act)                                 # Tính Q(s')max
+        if maxqnext == -999999:                                                           # Nếu s' ko đi dx thì gán  Q(s')max = 0
             maxqnext = 0
-        diff = (reward + (self.discount * maxqnext)) - self.getQValue(state, action) # nếu đi được thì tính diff = [r+alpha*maxQ(s',a')] - Q(s,a)
-        features = self.featExtractor.getFeatures(state, action) #fm(s,a)
+        diff = (reward + (self.discount * maxqnext)) - self.getQValue(state, action)      # nếu đi được thì tính diff = [r+alpha*maxQ(s',a')] - Q(s,a)
+        features = self.featExtractor.getFeatures(state, action)
         self.qvalue[(state, action)] += self.alpha * diff
         for feature in features.keys():
-            self.weights[feature] += self.alpha * diff * features[feature] # W = w+alpha[r+y.maxQ(s',a') - Q(s,a)]fm(s,a)
-     
+            self.weights[feature] += self.alpha * diff * features[feature]
         # util.raiseNotDefined()
 
     def final(self, state):
@@ -228,5 +228,5 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
-            #Thoát code
-            pass 
+            # Thoát code
+            pass
