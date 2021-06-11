@@ -104,14 +104,17 @@ class QLearningAgent(ReinforcementAgent):
           HINT: To pick randomly from a list, use random.choice(list)
         """
         # Pick Action
-        legalActions = self.getLegalActions(state)
-        action = None
+        legalActions = self.getLegalActions(state) #gọi các giá trị state trong legalAc
+        action = None # khỏi động action
         "*** YOUR CODE HERE ***"
+        if util.flipCoin(self.epsilon): # take ramdom action
+          return ramdom.choise(legalActions) # trả về giá trị legal actions
+        else:
+          return self.computeActionFromQValues(state) # Hết random trở về tính giá trị Action từ Q
 
+        util.raiseNotDefined()
 
-        # util.raiseNotDefined()
-
-        # return action
+        return action
 
     def update(self, state, action, nextState, reward):
         """
