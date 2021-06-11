@@ -65,10 +65,10 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         legalActions = self.getLegalActions(state) 
         if len(legalActions) == 0: # Giới hạn chiều dài tối đa được thép thử của Agent
-          return 0.0
-        maxqvalue = -99999
+          return 0.0 # quá chiều dài cho phép, về lại vị trí đầu
+        maxqvalue = -999999 # Phạt agent vì không tìm ra đường đi
         for maxqvalue in legalActions:
-          if self.getQValue(state, action) > maxqvalue:
+          if self.getQValue(state, action) > maxqvalue: # thử từng Actions, gán Q value cho actions có kết quả tốt nhất.
             maxqvalue = self.getQValue(state, action)
           return maxqvalue
         # util.raiseNotDefined()
@@ -77,11 +77,21 @@ class QLearningAgent(ReinforcementAgent):
         """
           Compute the best action to take in a state.  Note that if there
           are no legal actions, which is the case at the terminal state,
-          you should return None.
+          you should return None. #tính maxQ(s',a') --> target
         """
         "*** YOUR CODE HERE ***"
-
-        # util.raiseNotDefined()
+        bestAction = [None] # tái khới động lại bestaction
+        legalActions = self.getLegalActions(state) #truy nhập toàn bộ các khả năng
+        maxqvalue = -999999 #Đưa maxqvalue về giá trị nhỏ nhất
+        for action in legalActions: # thử từng action có thể
+          if self.getQValue(state,action) > maxqvalue: # nếu giá Q tại state > max
+            maxqvalue =self.getQValue(state, action) # maxq = giá trị hiện tại
+            bestAction = [action] # best = giá trị đó
+          elif self.getQvalue (state, action) == maxqvalue: # nếu không
+            bestAction.append(action) # thêm action đó vào list
+        return ramdom.choice(action) # tiếp tục làm hoạt động ngẫu nhiên.
+        
+        util.raiseNotDefined()
 
     def getAction(self, state):
         """
